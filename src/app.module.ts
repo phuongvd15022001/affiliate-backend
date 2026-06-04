@@ -2,6 +2,7 @@ import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { ThrottlerModule } from '@nestjs/throttler';
 import Joi from 'joi';
 import { join } from 'path';
 import { AppController } from './app.controller';
@@ -29,6 +30,7 @@ import { PrismaModule } from './services/prisma/prisma.module';
         APP_PASSWORD: Joi.string().required(),
       }),
     }),
+    ThrottlerModule.forRoot([{ ttl: 60000, limit: 100 }]),
     PrismaModule,
     AuthModule,
     UsersModule,

@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cmd=$(jq -r '.tool_input.command'); if echo \"$cmd\" | grep -qE 'git\\s+add' && echo \"$cmd\" | grep -qE '\\.env'; then echo '{\"continue\":false,\"stopReason\":\".env files must not be staged. Remove .env from your git add command.\"}'; fi",
+            "statusMessage": "Checking for .env in git add..."
+          }
+        ]
+      }
+    ]
+  }
+}

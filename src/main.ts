@@ -5,9 +5,12 @@ import { AllExceptionsFilter } from './filters/all.exceptions.filter';
 import { InvalidFormExceptionFilter } from './filters/invalid.form.exception.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cors from 'cors';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.use(helmet());
 
   // Validation
   app.useGlobalPipes(
