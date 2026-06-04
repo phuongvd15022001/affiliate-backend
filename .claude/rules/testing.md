@@ -2,7 +2,7 @@
 
 ## Test Types
 
-| Loại      | File                 | Chạy               |
+| Type      | File                 | Run                |
 | --------- | -------------------- | ------------------ |
 | Unit test | `src/**/*.spec.ts`   | `npm run test`     |
 | E2E test  | `test/*.e2e-spec.ts` | `npm run test:e2e` |
@@ -28,8 +28,8 @@ describe('ProductsService', () => {
 });
 ```
 
-- Mock external dependencies (repository, mail, prisma) — không để unit test hit database thật
-- Test file đặt cạnh file cần test: `products.service.spec.ts` bên cạnh `products.service.ts`
+- Mock external dependencies (repository, mail, prisma) — do not let unit tests hit the real database
+- Place the test file next to the file under test: `products.service.spec.ts` next to `products.service.ts`
 
 ## E2E Test — Supertest
 
@@ -55,11 +55,11 @@ describe('Products (e2e)', () => {
 });
 ```
 
-- E2E test đặt trong `test/` folder
+- Place E2E tests in the `test/` folder
 - Filename: `<resource>.e2e-spec.ts`
 
-## Quy tắc chung
+## General Rules
 
-- Viết test khi được yêu cầu hoặc khi fix bug — không tự thêm test ngoài scope
-- Không mock `PrismaService` trong E2E — để test hit database test thật
-- Đặt tên describe/it theo pattern: `describe('ClassName')` → `it('methodName - case')`
+- Write tests only when requested or when fixing a bug — do not add tests outside the scope
+- Do not mock `PrismaService` in E2E — let tests hit the real test database
+- Name describe/it blocks following the pattern: `describe('ClassName')` → `it('methodName - case')`

@@ -2,20 +2,20 @@
 
 ## File Naming
 
-- kebab-case với dot-separator cho type: `products.service.ts`, `create-product.dto.ts`
+- kebab-case with dot-separator for type: `products.service.ts`, `create-product.dto.ts`
 - Guard: `jwt.guard.ts`, Strategy: `jwt.strategy.ts`, Repository: `products.repository.ts`
 - Constants: `global.constants.ts`, Helpers: `auth.helpers.ts`, Decorators: `current-user.decorator.ts`
 
 ## Module Structure
 
-Mỗi module trong `src/modules/<name>/` phải có đủ:
+Each module in `src/modules/<name>/` must include:
 
 ```
 src/modules/<name>/
 ├── <name>.module.ts
 ├── <name>.controller.ts
 ├── <name>.service.ts
-├── <name>.repository.ts     ← bắt buộc, không query Prisma trực tiếp trong service
+├── <name>.repository.ts     ← required — no direct Prisma queries in service
 └── dto/
     ├── create-<name>.dto.ts
     ├── update-<name>.dto.ts
@@ -25,15 +25,19 @@ src/modules/<name>/
 
 ## Import Paths
 
-- Dùng `src/` prefix, không dùng relative path `../../`:
+- Use `src/` prefix, do not use relative paths like `../../`:
   - ✅ `import { PrismaService } from 'src/services/prisma/prisma.service'`
   - ❌ `import { PrismaService } from '../../services/prisma/prisma.service'`
 
 ## DTO Conventions
 
-### Request DTO — dùng custom decorators từ `src/shared/decorators/dto.decorators.ts`
+### Request DTO — use custom decorators from `src/shared/decorators/dto.decorators.ts`
+
+- **Required** field: add `@ApiProperty({ description, example })` above the field decorator
+- **Optional** field: add `@ApiPropertyOptional({ description, example })` above the field decorator
 
 ```ts
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   StringField,
   NumberField,
@@ -42,15 +46,17 @@ import {
 } from 'src/shared/decorators/dto.decorators';
 
 export class CreateProductDto {
+  @ApiProperty({ example: 'iPhone', description: 'Product name' })
   @StringField()
   name: string;
 
+  @ApiPropertyOptional({ example: 100, description: 'Product price' })
   @NumberField({ optional: true })
   price?: number;
 }
 ```
 
-Không dùng `@ApiProperty` + `@IsString` thủ công — dùng `StringField`, `NumberField`, `EmailField`, `IntField`, `BooleanField`, `EnumField`, `DateStringField`.
+Do not use `@ApiProperty` + `@IsString` manually as a replacement for field decorators — use `@ApiProperty`/`@ApiPropertyOptional` only to add `description`/`example` for Swagger; validation still uses `StringField`, `NumberField`, `EmailField`, `IntField`, `BooleanField`, `EnumField`, `DateStringField`.
 
 ### List DTO — extend `BasePaginationDto`
 
@@ -60,7 +66,7 @@ import { BasePaginationDto } from 'src/shared/dtos/base-pagination.dto';
 export class GetListProductsDto extends BasePaginationDto {}
 ```
 
-### Response DTO — dùng `@ResField()`
+### Response DTO — use `@ResField()`
 
 ```ts
 import { ResField } from 'src/shared/decorators/dto.decorators';
@@ -73,10 +79,10 @@ export class ProductResponseDto {
 
 ## Controller Conventions
 
-- Luôn khai báo `@Roles()` + `@UseGuards(JwtAuthGuard)` + `@UseInterceptors(new TransformInterceptor(ResponseDto))` theo thứ tự đó
-- `@Roles(ERole.PUBLIC)` cho endpoint không cần auth, `@Roles(ERole.USER)` / `@Roles(ERole.ADMIN)` cho endpoint cần auth
-- Luôn có `@ApiTags`, `@ApiOperation`, `@ApiOkResponse` trên mỗi endpoint
-- Dùng `@CurrentUser()` để lấy user hiện tại từ JWT token
+- Always declare `@Roles()` + `@UseGuards(JwtAuthGuard)` + `@UseInterceptors(new TransformInterceptor(ResponseDto))` in that order
+- `@Roles(ERole.PUBLIC)` for endpoints that require no auth, `@Roles(ERole.USER)` / `@Roles(ERole.ADMIN)` for authenticated endpoints
+- Always include `@ApiTags`, `@ApiOperation`, `@ApiOkResponse` on each endpoint
+- Use `@CurrentUser()` to get the current user from the JWT token
 
 ```ts
 @Roles(ERole.USER)
@@ -90,13 +96,13 @@ createProduct(@Body() dto: CreateProductDto, @CurrentUser() user: { id: string; 
 
 ## Repository Conventions
 
-- Repository chỉ chứa Prisma queries, không có business logic
-- Nhận params dạng object: `{ whereUniqueInput, data, includes }` theo pattern hiện có
-- Service gọi repository, không gọi `this.prisma` trực tiếp
+- Repository contains only Prisma queries, no business logic
+- Accepts params as an object: `{ whereUniqueInput, data, includes }` following the existing pattern
+- Service calls the repository, does not call `this.prisma` directly
 
 ## Shared Utilities
 
-| Loại                           | Đặt ở                      |
+| Type                           | Location                   |
 | ------------------------------ | -------------------------- |
 | Constants, enums               | `src/shared/constants/`    |
 | Custom decorators              | `src/shared/decorators/`   |

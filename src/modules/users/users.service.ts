@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -10,15 +11,11 @@ import { UsersRepository } from './users.repository';
 import { BasePaginationResponseDto } from 'src/shared/dtos/base-pagination.response.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { PrismaService } from 'src/services/prisma/prisma.service';
 import { CreateUsersDto } from './dto/create-users.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    private usersRepository: UsersRepository,
-    private prisma: PrismaService,
-  ) {}
+  constructor(private usersRepository: UsersRepository) {}
 
   async findAll(params: { getListUsersDto: GetListUsersDto }) {
     const { getListUsersDto } = params;
@@ -156,13 +153,26 @@ export class UsersService {
   }
 
   async createMany(createUsersDto: CreateUsersDto) {
-    const result = await this.prisma.$transaction((transaction) =>
-      this.usersRepository.createManyWithTransaction({
-        data: createUsersDto.users,
-        transaction,
-      }),
-    );
+    const emails = createUsersDto.users.map((u) => u.email);
 
-    return result.count;
+    const duplicateInInput = emails.filter(
+      (email, index) => emails.indexOf(email) !== index,
+    );
+    if (duplicateInInput.length > 0) {
+      throw new BadRequestException(
+        `Duplicate emails in request: ${[...new Set(duplicateInInput)].join(', ')}`,
+      );
+    }
+
+    const existing = await this.usersRepository.findAll({
+      where: { email: { in: emails } },
+    });
+    if (existing.length > 0) {
+      throw new ConflictException(
+        `Emails already exist: ${existing.map((u) => u.email).join(', ')}`,
+      );
+    }
+
+    return this.usersRepository.createMany({ data: createUsersDto.users });
   }
 }

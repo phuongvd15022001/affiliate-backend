@@ -131,17 +131,10 @@ export class UsersRepository {
     });
   }
 
-  async createManyWithTransaction(params: {
-    transaction: Omit<
-      PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
-      '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
-    >;
+  async createMany(params: {
     data: Prisma.UserUncheckedCreateInput[];
-  }) {
-    const { data, transaction } = params;
-
-    return transaction.user.createMany({
-      data,
-    });
+  }): Promise<{ count: number }> {
+    const { data } = params;
+    return this.prisma.$transaction((tx) => tx.user.createMany({ data }));
   }
 }

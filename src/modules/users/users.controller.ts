@@ -14,6 +14,7 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import {
+  CreateManyUsersResponseDto,
   UserResponseDto,
   UserWithProductResponseDto,
 } from './dto/user.response.dto';
@@ -95,9 +96,10 @@ export class UsersController {
   // POST /users/many
   @Roles(ERole.USER)
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(new TransformInterceptor(CreateManyUsersResponseDto))
   @Post('many')
-  @ApiOperation({ summary: 'Create new user' })
-  @ApiOkResponse({ type: Number })
+  @ApiOperation({ summary: 'Bulk create users' })
+  @ApiOkResponse({ type: CreateManyUsersResponseDto })
   createManyUsers(@Body() createUsersDto: CreateUsersDto) {
     return this.userService.createMany(createUsersDto);
   }

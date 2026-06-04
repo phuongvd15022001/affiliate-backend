@@ -99,16 +99,16 @@ Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
 
 ## Docker
 
-1. Khởi động container:
+1. Start containers:
 docker compose up -d
 
-2. Kiểm tra container đang chạy:
+2. Check running containers:
 docker compose ps
 
-3. Khi muốn dừng:
+3. To stop:
 docker compose down
 
-4. Dừng và xóa cả data:
+4. Stop and remove all data:
 docker compose down -v
 
 ## Prisma

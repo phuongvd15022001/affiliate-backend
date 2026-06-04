@@ -1,7 +1,7 @@
 # Claude Behavior Policy
 
 ### Commits & Git
-- **Never commit unless explicitly asked.** Always wait for the user to say "commit" or "tạo commit".
+- **Never commit unless explicitly asked.** Always wait for the user to say "commit" or "create a commit".
 - **Never push** to remote without explicit confirmation, even if asked to commit.
 - **Never force push** to `main`/`master` under any circumstance.
 - **Never use `--no-verify`** to skip pre-commit hooks. Fix the underlying issue instead.

@@ -6,7 +6,10 @@ export class CreateProductDto {
   @StringField({ optional: false }, { min: 1, max: 100 })
   name: string;
 
-  @ApiPropertyOptional({ example: 'Fresh whole chicken', description: 'Product Description' })
+  @ApiPropertyOptional({
+    example: 'Fresh whole chicken',
+    description: 'Product Description',
+  })
   @StringField({ optional: true })
   description?: string;
 
