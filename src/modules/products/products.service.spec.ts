@@ -53,7 +53,9 @@ describe('ProductsService', () => {
       const created = { id: 1, ...dto, userId: 3, description: null };
       mockRepo.create.mockResolvedValue(created);
       const result = await service.create(dto as any, 3);
-      expect(mockRepo.create).toHaveBeenCalledWith({ data: { ...dto, userId: 3 } });
+      expect(mockRepo.create).toHaveBeenCalledWith({
+        data: { ...dto, userId: 3 },
+      });
       expect(result).toEqual(created);
     });
   });
@@ -85,7 +87,12 @@ describe('ProductsService', () => {
 
     it('updates when current user is ADMIN regardless of ownership', async () => {
       mockRepo.findOne.mockResolvedValue({ id: 1, userId: 2 });
-      mockRepo.update.mockResolvedValue({ id: 1, name: 'Updated', userId: 2, price: 5 });
+      mockRepo.update.mockResolvedValue({
+        id: 1,
+        name: 'Updated',
+        userId: 2,
+        price: 5,
+      });
       await expect(
         service.update(1, { name: 'Updated' }, { id: '99', role: ERole.ADMIN }),
       ).resolves.not.toThrow();
@@ -113,7 +120,9 @@ describe('ProductsService', () => {
       await expect(
         service.remove(1, { id: '3', role: ERole.USER }),
       ).resolves.toBeUndefined();
-      expect(mockRepo.delete).toHaveBeenCalledWith({ whereUniqueInput: { id: 1 } });
+      expect(mockRepo.delete).toHaveBeenCalledWith({
+        whereUniqueInput: { id: 1 },
+      });
     });
 
     it('deletes when current user is ADMIN regardless of ownership', async () => {

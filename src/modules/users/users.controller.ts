@@ -31,7 +31,7 @@ import { CreateUsersDto } from './dto/create-users.dto';
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly userService: UsersService) { }
+  constructor(private readonly userService: UsersService) {}
 
   // GET /users
   @Roles(ERole.USER)

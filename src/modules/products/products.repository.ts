@@ -15,7 +15,14 @@ export class ProductsRepository {
     select?: Prisma.ProductSelect;
   }): Promise<Product[]> {
     const { skip, take, cursor, where, orderBy, select } = params;
-    return this.prisma.product.findMany({ skip, take, cursor, where, orderBy, select });
+    return this.prisma.product.findMany({
+      skip,
+      take,
+      cursor,
+      where,
+      orderBy,
+      select,
+    });
   }
 
   async count(params: { where?: Prisma.ProductWhereInput }): Promise<number> {
@@ -32,7 +39,9 @@ export class ProductsRepository {
     });
   }
 
-  async create(params: { data: Prisma.ProductUncheckedCreateInput }): Promise<Product> {
+  async create(params: {
+    data: Prisma.ProductUncheckedCreateInput;
+  }): Promise<Product> {
     return this.prisma.product.create({ data: params.data });
   }
 
@@ -40,7 +49,10 @@ export class ProductsRepository {
     whereUniqueInput: Prisma.ProductWhereUniqueInput;
     data: Prisma.ProductUncheckedUpdateInput;
   }): Promise<Product> {
-    return this.prisma.product.update({ data: params.data, where: params.whereUniqueInput });
+    return this.prisma.product.update({
+      data: params.data,
+      where: params.whereUniqueInput,
+    });
   }
 
   async delete(params: {

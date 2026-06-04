@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { ERole } from 'src/shared/constants/global.constants';
 import { BasePaginationResponseDto } from 'src/shared/dtos/base-pagination.response.dto';
@@ -24,11 +28,18 @@ export class ProductsService {
         contains: getListProductsDto.search,
         mode: Prisma.QueryMode.insensitive,
       },
-      ...(getListProductsDto.userId ? { userId: getListProductsDto.userId } : {}),
+      ...(getListProductsDto.userId
+        ? { userId: getListProductsDto.userId }
+        : {}),
     };
 
     const [products, total] = await Promise.all([
-      this.productsRepository.findAll({ take, skip, orderBy: sortByField, where }),
+      this.productsRepository.findAll({
+        take,
+        skip,
+        orderBy: sortByField,
+        where,
+      }),
       this.productsRepository.count({ where }),
     ]);
 
@@ -63,14 +74,21 @@ export class ProductsService {
     updateProductDto: UpdateProductDto,
     currentUser: { id: string; role: ERole },
   ) {
-    const product = await this.productsRepository.findOne({ whereUniqueInput: { id } });
+    const product = await this.productsRepository.findOne({
+      whereUniqueInput: { id },
+    });
 
     if (!product) {
       throw new NotFoundException('Product not found');
     }
 
-    if (product.userId !== Number(currentUser.id) && currentUser.role !== ERole.ADMIN) {
-      throw new ForbiddenException('You are not allowed to modify this product');
+    if (
+      product.userId !== Number(currentUser.id) &&
+      currentUser.role !== ERole.ADMIN
+    ) {
+      throw new ForbiddenException(
+        'You are not allowed to modify this product',
+      );
     }
 
     return this.productsRepository.update({
@@ -80,14 +98,21 @@ export class ProductsService {
   }
 
   async remove(id: number, currentUser: { id: string; role: ERole }) {
-    const product = await this.productsRepository.findOne({ whereUniqueInput: { id } });
+    const product = await this.productsRepository.findOne({
+      whereUniqueInput: { id },
+    });
 
     if (!product) {
       throw new NotFoundException('Product not found');
     }
 
-    if (product.userId !== Number(currentUser.id) && currentUser.role !== ERole.ADMIN) {
-      throw new ForbiddenException('You are not allowed to modify this product');
+    if (
+      product.userId !== Number(currentUser.id) &&
+      currentUser.role !== ERole.ADMIN
+    ) {
+      throw new ForbiddenException(
+        'You are not allowed to modify this product',
+      );
     }
 
     await this.productsRepository.delete({ whereUniqueInput: { id } });

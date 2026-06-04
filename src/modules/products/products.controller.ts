@@ -20,7 +20,10 @@ import { TransformInterceptor } from 'src/shared/interceptors/transform.intercep
 import { BasePaginationResponseDto } from 'src/shared/dtos/base-pagination.response.dto';
 import { CurrentUser } from 'src/shared/decorators/current-user.decorator';
 import { ProductsService } from './products.service';
-import { ProductResponseDto, ProductWithUserResponseDto } from './dto/product.response.dto';
+import {
+  ProductResponseDto,
+  ProductWithUserResponseDto,
+} from './dto/product.response.dto';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { GetListProductsDto } from './dto/get-list-products.dto';
@@ -35,7 +38,9 @@ export class ProductsController {
   @UseInterceptors(new TransformInterceptor(ProductResponseDto))
   @Get()
   @ApiOperation({ summary: 'Get all products' })
-  @ApiOkResponse({ type: BasePaginationResponseDto.apiOKResponse(ProductResponseDto) })
+  @ApiOkResponse({
+    type: BasePaginationResponseDto.apiOKResponse(ProductResponseDto),
+  })
   findAll(@Query() getListProductsDto: GetListProductsDto) {
     return this.productsService.findAll({ getListProductsDto });
   }
@@ -60,7 +65,10 @@ export class ProductsController {
     @Body() createProductDto: CreateProductDto,
     @CurrentUser() currentUser: { id: string; role: ERole },
   ) {
-    return this.productsService.create(createProductDto, Number(currentUser.id));
+    return this.productsService.create(
+      createProductDto,
+      Number(currentUser.id),
+    );
   }
 
   @Roles(ERole.USER)
