@@ -1,21 +1,18 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { ExtractJwt, Strategy } from 'passport-jwt';
+import { ExtractJwt, Strategy, StrategyOptionsWithRequest } from 'passport-jwt';
+import { GLOBAL_CONFIG } from 'src/configs/global.config';
 import { ERole } from 'src/shared/constants/global.constants';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
     super({
-      jwtFromRequest: ExtractJwt.fromExtractors([
-        ExtractJwt.fromAuthHeaderAsBearerToken(),
-        ExtractJwt.fromHeader('authorization'),
-        ExtractJwt.fromUrlQueryParameter('token'),
-      ]),
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET!,
+      secretOrKey: GLOBAL_CONFIG.jwt.secret,
       passReqToCallback: true,
-    });
+    } as StrategyOptionsWithRequest);
   }
 
   validate(
@@ -31,6 +28,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       }
     }
 
-    return { id: payload.sub, email: payload.email, name: payload.name, role: payload.role };
+    return {
+      id: payload.sub,
+      email: payload.email,
+      name: payload.name,
+      role: payload.role,
+    };
   }
 }

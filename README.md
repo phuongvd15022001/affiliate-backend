@@ -100,18 +100,19 @@ Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
 ## Docker
 
 1. Start containers:
-docker compose up -d
+   docker compose up -d
 
 2. Check running containers:
-docker compose ps
+   docker compose ps
 
 3. To stop:
-docker compose down
+   docker compose down
 
 4. Stop and remove all data:
-docker compose down -v
+   docker compose down -v
 
 ## Prisma
+
 Migration
 npx prisma migrate dev --name migration_name
 
@@ -119,4 +120,4 @@ Generate
 npx prisma generate
 
 Seed
-npm run prisma:seed
+npx prisma db seed

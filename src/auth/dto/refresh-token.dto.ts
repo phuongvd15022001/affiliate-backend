@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { StringField } from 'src/shared/decorators/dto.decorators';
 
 export class RefreshTokenDto {
   @ApiProperty({ description: 'Refresh Token' })
-  @IsString()
+  @StringField()
   refreshToken: string;
 }

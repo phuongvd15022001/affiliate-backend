@@ -35,7 +35,7 @@ export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
   // GET /users
-  @Roles(ERole.USER)
+  @Roles(ERole.USER, ERole.ADMIN)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(new TransformInterceptor(UserResponseDto))
   @Get()
@@ -48,7 +48,7 @@ export class UsersController {
   }
 
   // GET /users/:id
-  @Roles(ERole.USER)
+  @Roles(ERole.USER, ERole.ADMIN)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(new TransformInterceptor(UserWithProductResponseDto))
   @Get(':id')

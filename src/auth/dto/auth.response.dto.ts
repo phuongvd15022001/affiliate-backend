@@ -1,36 +1,35 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Expose, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import { ERole } from 'src/shared/constants/global.constants';
+import { ResField } from 'src/shared/decorators/dto.decorators';
 
 class AuthPayloadDto {
-  @ApiProperty()
-  @Expose()
+  @ResField({ example: 1, description: 'User ID' })
   sub: number;
 
-  @ApiProperty()
-  @Expose()
+  @ResField({ example: 'user@example.com', description: 'User email' })
   email: string;
 
-  @ApiProperty()
-  @Expose()
+  @ResField({ example: 'John Doe', description: 'User name' })
   name: string;
 
-  @ApiProperty({ enum: ERole })
-  @Expose()
+  @ResField({ enum: ERole, description: 'User role' })
   role: ERole;
 }
 
 export class AuthResponseDto {
-  @ApiProperty({ type: AuthPayloadDto })
-  @Expose()
+  @ResField({ type: AuthPayloadDto, description: 'JWT payload' })
   @Type(() => AuthPayloadDto)
   payload: AuthPayloadDto;
 
-  @ApiProperty()
-  @Expose()
+  @ResField({
+    example: 'eyJhbGciOiJIUzI1NiJ9...',
+    description: 'Access token (5m)',
+  })
   accessToken: string;
 
-  @ApiProperty()
-  @Expose()
+  @ResField({
+    example: 'eyJhbGciOiJIUzI1NiJ9...',
+    description: 'Refresh token (7d)',
+  })
   refreshToken: string;
 }

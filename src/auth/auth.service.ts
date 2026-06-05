@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import type { User } from '@prisma/client';
+import { GLOBAL_CONFIG } from 'src/configs/global.config';
 import { UsersService } from 'src/modules/users/users.service';
 import { ERole } from 'src/shared/constants/global.constants';
 import { AuthHelpers } from 'src/shared/helpers/auth.helpers';
@@ -11,15 +11,20 @@ export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
-    private configService: ConfigService,
   ) {}
 
   async validateUser(email: string, password: string) {
-    const user = await this.usersService.findOneByEmail(email);
-    const isPasswordValid = await AuthHelpers.verify(password, user.password);
+    const user = await this.usersService
+      .findOneByEmail(email)
+      .catch(() => null);
 
+    if (!user?.password) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const isPasswordValid = await AuthHelpers.verify(password, user.password);
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Password is incorrect');
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     return user;
@@ -36,7 +41,7 @@ export class AuthService {
     const accessToken = this.jwtService.sign(payload, { expiresIn: '5m' });
     const refreshToken = this.jwtService.sign(payload, {
       expiresIn: '7d',
-      secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+      secret: GLOBAL_CONFIG.jwt.refreshSecret,
     });
     const hashedRefreshToken = await AuthHelpers.hash(refreshToken);
 
