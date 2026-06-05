@@ -34,7 +34,6 @@ import { CreateUsersDto } from './dto/create-users.dto';
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
-  // GET /users
   @Roles(ERole.USER, ERole.ADMIN)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(new TransformInterceptor(UserResponseDto))
@@ -47,7 +46,6 @@ export class UsersController {
     return this.userService.findAll({ getListUsersDto });
   }
 
-  // GET /users/:id
   @Roles(ERole.USER, ERole.ADMIN)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(new TransformInterceptor(UserWithProductResponseDto))
@@ -58,7 +56,6 @@ export class UsersController {
     return this.userService.findOne(id);
   }
 
-  // POST /users
   @Roles(ERole.USER)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(new TransformInterceptor(UserResponseDto))
@@ -69,7 +66,6 @@ export class UsersController {
     return this.userService.create(createUserDto);
   }
 
-  // PUT /users/:id
   @Roles(ERole.ADMIN)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(new TransformInterceptor(UserResponseDto))
@@ -83,7 +79,6 @@ export class UsersController {
     return this.userService.update(id, updateUserDto);
   }
 
-  // DELETE /users/:id
   @Roles(ERole.ADMIN)
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
@@ -93,7 +88,6 @@ export class UsersController {
     return this.userService.remove(id);
   }
 
-  // POST /users/many
   @Roles(ERole.USER)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(new TransformInterceptor(CreateManyUsersResponseDto))
