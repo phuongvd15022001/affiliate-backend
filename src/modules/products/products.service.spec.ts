@@ -3,6 +3,7 @@ import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { ProductsRepository } from './products.repository';
 import { ERole } from 'src/shared/constants/global.constants';
+import { CreateProductDto } from './dto/create-product.dto';
 
 const mockRepo = {
   findAll: jest.fn(),
@@ -49,10 +50,10 @@ describe('ProductsService', () => {
 
   describe('create', () => {
     it('creates product with the given userId', async () => {
-      const dto = { name: 'Chicken', price: 9.99 };
+      const dto: CreateProductDto = { name: 'Chicken', price: 9.99 };
       const created = { id: 1, ...dto, userId: 3, description: null };
       mockRepo.create.mockResolvedValue(created);
-      const result = await service.create(dto as any, 3);
+      const result = await service.create(dto, 3);
       expect(mockRepo.create).toHaveBeenCalledWith({
         data: { ...dto, userId: 3 },
       });
