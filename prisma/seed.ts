@@ -106,7 +106,9 @@ async function main() {
         },
       });
 
-      const existingCount = await tx.product.count({ where: { userId: user.id } });
+      const existingCount = await tx.product.count({
+        where: { userId: user.id },
+      });
       if (existingCount === 0) {
         await tx.product.createMany({
           data: userData.products.map((p) => ({ ...p, userId: user.id })),
