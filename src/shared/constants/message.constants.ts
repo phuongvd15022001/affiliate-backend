@@ -26,4 +26,6 @@ export const MESSAGES = {
   REQUIRED_BOOLEAN: 'Must be a boolean',
   REQUIRED_MAX_LENGTH: 'Length can not exceed {0}',
   CAN_NOT_UPLOAD_FILE: 'Can not upload file',
+  REQUIRED_ARRAY: 'Must be a array',
+  REQUIRED_OBJECT: 'Must be a object',
 };

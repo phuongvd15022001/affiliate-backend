@@ -1,7 +1,9 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiProperty, ApiPropertyOptions } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import {
+  ArrayMinSize,
+  IsArray,
   IsBoolean,
   IsDateString,
   IsEmail,
@@ -9,10 +11,12 @@ import {
   IsInt,
   IsNotEmpty,
   IsNumber,
+  IsObject,
   IsOptional,
   IsString,
   Length,
   Min,
+  ValidateNested,
   ValidationArguments,
 } from 'class-validator';
 
@@ -230,6 +234,55 @@ export function BooleanField(options?: IDtoDecoratorOption) {
       };
 
       decorators.push(IsBoolean(messageCustom));
+    },
+  );
+}
+
+export function ArrayField(
+  entity: new (...args: any[]) => any,
+  options?: IDtoDecoratorOption & { minSize?: number },
+) {
+  return initializeDecorators(
+    options as IDtoDecoratorOption,
+    (decorators: PropertyDecorator[]) => {
+      const messageCustom = {
+        message: (args: ValidationArguments) =>
+          CommonHelpers.formatMessageString(
+            MESSAGES.REQUIRED_ARRAY,
+            args.property,
+          ),
+      };
+
+      decorators.push(
+        IsArray(messageCustom),
+        ValidateNested({ each: true }),
+        Type(() => entity),
+        ApiProperty({ type: () => [entity] }),
+      );
+
+      if (options?.minSize !== undefined) {
+        decorators.push(ArrayMinSize(options.minSize));
+      }
+    },
+  );
+}
+
+export function ObjectField(entity: object, options?: IDtoDecoratorOption) {
+  return initializeDecorators(
+    options as IDtoDecoratorOption,
+    (decorators: PropertyDecorator[]) => {
+      const messageCustom = {
+        message: (args: ValidationArguments) =>
+          CommonHelpers.formatMessageString(
+            MESSAGES.REQUIRED_OBJECT,
+            args.property,
+          ),
+      };
+
+      decorators.push(
+        IsObject(messageCustom),
+        ApiProperty({ type: () => entity }),
+      );
     },
   );
 }

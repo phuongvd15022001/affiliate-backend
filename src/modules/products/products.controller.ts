@@ -27,6 +27,8 @@ import {
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { GetListProductsDto } from './dto/get-list-products.dto';
+import { CreateManyProductsDto } from './dto/create-many-products.dto';
+import { CreateManyProductsResponseDto } from './dto/create-many-products.response.dto';
 
 @ApiTags('products')
 @Controller('products')
@@ -53,6 +55,19 @@ export class ProductsController {
   @ApiOkResponse({ type: ProductWithUserResponseDto })
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.productsService.findOne(id);
+  }
+
+  @Roles(ERole.USER)
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(new TransformInterceptor(CreateManyProductsResponseDto))
+  @Post('bulk')
+  @ApiOperation({ summary: 'Create many products (atomic)' })
+  @ApiOkResponse({ type: CreateManyProductsResponseDto })
+  createManyProducts(
+    @Body() dto: CreateManyProductsDto,
+    @CurrentUser() currentUser: { id: string; role: ERole },
+  ) {
+    return this.productsService.createMany(dto.items, Number(currentUser.id));
   }
 
   @Roles(ERole.USER)

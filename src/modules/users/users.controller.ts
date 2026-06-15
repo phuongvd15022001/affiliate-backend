@@ -91,8 +91,8 @@ export class UsersController {
   @Roles(ERole.USER)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(new TransformInterceptor(CreateManyUsersResponseDto))
-  @Post('many')
-  @ApiOperation({ summary: 'Bulk create users' })
+  @Post('bulk')
+  @ApiOperation({ summary: 'Create many users' })
   @ApiOkResponse({ type: CreateManyUsersResponseDto })
   createManyUsers(@Body() createUsersDto: CreateUsersDto) {
     return this.userService.createMany(createUsersDto);

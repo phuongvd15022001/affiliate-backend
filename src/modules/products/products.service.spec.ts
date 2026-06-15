@@ -12,6 +12,7 @@ const mockRepo = {
   create: jest.fn(),
   update: jest.fn(),
   delete: jest.fn(),
+  createMany: jest.fn(),
 };
 
 describe('ProductsService', () => {
@@ -58,6 +59,26 @@ describe('ProductsService', () => {
         data: { ...dto, userId: 3 },
       });
       expect(result).toEqual(created);
+    });
+  });
+
+  describe('createMany', () => {
+    it('calls repository with items mapped to include userId', async () => {
+      const items: CreateProductDto[] = [
+        { name: 'Milk', price: 1.5 },
+        { name: 'Bread', price: 2.0 },
+      ];
+      mockRepo.createMany.mockResolvedValue({ count: 2 });
+
+      const result = await service.createMany(items, 7);
+
+      expect(mockRepo.createMany).toHaveBeenCalledWith({
+        data: [
+          { name: 'Milk', price: 1.5, userId: 7 },
+          { name: 'Bread', price: 2.0, userId: 7 },
+        ],
+      });
+      expect(result).toEqual({ count: 2 });
     });
   });
 

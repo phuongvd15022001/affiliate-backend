@@ -69,6 +69,15 @@ export class ProductsService {
     });
   }
 
+  async createMany(
+    items: CreateProductDto[],
+    userId: number,
+  ): Promise<{ count: number }> {
+    return this.productsRepository.createMany({
+      data: items.map((item) => ({ ...item, userId })),
+    });
+  }
+
   async update(
     id: number,
     updateProductDto: UpdateProductDto,

@@ -60,4 +60,12 @@ export class ProductsRepository {
   }): Promise<Product> {
     return this.prisma.product.delete({ where: params.whereUniqueInput });
   }
+
+  async createMany(params: {
+    data: Prisma.ProductCreateManyInput[];
+  }): Promise<Prisma.BatchPayload> {
+    return this.prisma.$transaction(async (tx) => {
+      return tx.product.createMany({ data: params.data });
+    });
+  }
 }
