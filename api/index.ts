@@ -1,15 +1,15 @@
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { AllExceptionsFilter } from './filters/all.exceptions.filter';
-import { InvalidFormExceptionFilter } from './filters/invalid.form.exception.filter';
+import { ExpressAdapter } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { AppModule } from '../src/app.module';
+import { AllExceptionsFilter } from '../src/filters/all.exceptions.filter';
+import { InvalidFormExceptionFilter } from '../src/filters/invalid.form.exception.filter';
 import cors from 'cors';
 import helmet from 'helmet';
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
+import { IncomingMessage, ServerResponse } from 'node:http';
 
-// Normalize literal newlines/carriage-returns inside JSON string values
-// so clients can paste raw multiline text without escaping \n
 function normalizeJsonLiteralNewlines(raw: string): string {
   let inString = false;
   let escaped = false;
@@ -45,35 +45,32 @@ function normalizeJsonLiteralNewlines(raw: string): string {
   return result;
 }
 
+const server = express();
+let initialized = false;
+
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { bodyParser: false });
+  if (initialized) return;
 
-  // Raw JSON body parser → normalize literal newlines → parse
+  const app = await NestFactory.create(AppModule, new ExpressAdapter(server), {
+    bodyParser: false,
+  });
+
   app.use(express.raw({ type: 'application/json', limit: '10mb' }));
-  app.use(
-    (
-      req: express.Request,
-      _res: express.Response,
-      next: express.NextFunction,
-    ) => {
-      if (Buffer.isBuffer(req.body)) {
-        try {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          req.body = JSON.parse(
-            normalizeJsonLiteralNewlines(req.body.toString('utf8')),
-          );
-        } catch (err) {
-          return next(err);
-        }
+  app.use((req: Request, _res: Response, next: NextFunction) => {
+    if (Buffer.isBuffer(req.body)) {
+      try {
+        req.body = JSON.parse(
+          normalizeJsonLiteralNewlines(req.body.toString('utf8')),
+        ) as unknown;
+      } catch (err) {
+        return next(err);
       }
-      next();
-    },
-  );
+    }
+    next();
+  });
   app.use(express.urlencoded({ extended: true }));
-
   app.use(helmet());
 
-  // Validation
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -82,26 +79,21 @@ async function bootstrap() {
     }),
   );
 
-  // Exception
   app.useGlobalFilters(
     new AllExceptionsFilter(app.get(HttpAdapterHost)),
     new InvalidFormExceptionFilter(),
   );
 
-  // Swagger
   const config = new DocumentBuilder()
-    .setTitle('Nest App Base')
-    .setDescription('API Documentation')
+    .setTitle('Affiliate API')
+    .setDescription('Shopee Affiliate Link Processor')
     .setVersion('1.0')
-    .addBearerAuth()
-    .addSecurityRequirements('bearer')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document, {
     swaggerOptions: { persistAuthorization: true },
   });
 
-  // Cors
   app.use(
     cors({
       origin: ['http://localhost:3000'],
@@ -110,6 +102,14 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.init();
+  initialized = true;
 }
-bootstrap();
+
+export default async function handler(
+  req: IncomingMessage,
+  res: ServerResponse,
+) {
+  await bootstrap();
+  server(req, res);
+}

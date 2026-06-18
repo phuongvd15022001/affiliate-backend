@@ -13,15 +13,15 @@ const hashPassword = (password: string): Promise<string> =>
 const prisma = new PrismaClient();
 
 async function main() {
-  const hashedPassword = await hashPassword('password123');
+  const hashedPassword = await hashPassword('123456');
 
   await prisma.$transaction(async (tx) => {
     // 1 admin
     await tx.user.upsert({
-      where: { email: 'admin@example.com' },
+      where: { email: 'admin@gmail.com' },
       update: { name: 'Admin', password: hashedPassword, role: Role.ADMIN },
       create: {
-        email: 'admin@example.com',
+        email: 'admin@gmail.com',
         name: 'Admin',
         password: hashedPassword,
         role: Role.ADMIN,
@@ -30,8 +30,8 @@ async function main() {
 
     // 2 regular users
     const users = [
-      { email: 'john@example.com', name: 'John Doe' },
-      { email: 'jane@example.com', name: 'Jane Smith' },
+      { email: 'jon@gmail.com', name: 'John Doe' },
+      { email: 'jane@gmail.com', name: 'Jane Smith' },
     ];
 
     for (const userData of users) {
