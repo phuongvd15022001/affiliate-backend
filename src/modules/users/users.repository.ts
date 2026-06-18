@@ -35,13 +35,11 @@ export class UsersRepository {
 
   async findOne(params: {
     whereUniqueInput: Prisma.UserWhereUniqueInput;
-    includes?: Prisma.UserInclude;
   }): Promise<User | null> {
-    const { whereUniqueInput, includes } = params;
+    const { whereUniqueInput } = params;
 
     return this.prisma.user.findUnique({
       where: whereUniqueInput,
-      include: includes,
     });
   }
 

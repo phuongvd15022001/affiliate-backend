@@ -48,9 +48,6 @@ export class UsersService {
       whereUniqueInput: {
         id,
       },
-      includes: {
-        Product: true,
-      },
     });
 
     if (!user) {

@@ -1,5 +1,3 @@
-import { Type } from 'class-transformer';
-import { ProductResponseDto } from 'src/modules/products/dto/product.response.dto';
 import { ResField } from 'src/shared/decorators/dto.decorators';
 
 export class UserResponseDto {
@@ -11,12 +9,6 @@ export class UserResponseDto {
 
   @ResField({ example: 'jon@gmail.com', description: 'User Email' })
   email: string;
-}
-
-export class UserWithProductResponseDto extends UserResponseDto {
-  @ResField({ type: [ProductResponseDto], description: 'User products' })
-  @Type(() => ProductResponseDto)
-  Product?: ProductResponseDto[];
 }
 
 export class CreateManyUsersResponseDto {

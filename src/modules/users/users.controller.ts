@@ -16,7 +16,6 @@ import { UsersService } from './users.service';
 import {
   CreateManyUsersResponseDto,
   UserResponseDto,
-  UserWithProductResponseDto,
 } from './dto/user.response.dto';
 import { TransformInterceptor } from 'src/shared/interceptors/transform.interceptor';
 import { GetListUsersDto } from './dto/get-list-users.dto';
@@ -48,10 +47,10 @@ export class UsersController {
 
   @Roles(ERole.USER, ERole.ADMIN)
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(new TransformInterceptor(UserWithProductResponseDto))
+  @UseInterceptors(new TransformInterceptor(UserResponseDto))
   @Get(':id')
   @ApiOperation({ summary: 'Get detail user' })
-  @ApiOkResponse({ type: UserWithProductResponseDto })
+  @ApiOkResponse({ type: UserResponseDto })
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.userService.findOne(id);
   }

@@ -67,14 +67,12 @@ describe('UsersService', () => {
       await expect(service.findOne(999)).rejects.toThrow(NotFoundException);
     });
 
-    it('returns user with products when found', async () => {
-      const userWithProducts = { ...mockUser, Product: [] };
-      mockRepo.findOne.mockResolvedValue(userWithProducts);
+    it('returns user when found', async () => {
+      mockRepo.findOne.mockResolvedValue(mockUser);
 
-      await expect(service.findOne(1)).resolves.toEqual(userWithProducts);
+      await expect(service.findOne(1)).resolves.toEqual(mockUser);
       expect(mockRepo.findOne).toHaveBeenCalledWith({
         whereUniqueInput: { id: 1 },
-        includes: { Product: true },
       });
     });
   });
